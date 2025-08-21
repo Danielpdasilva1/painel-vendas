@@ -1,42 +1,38 @@
-... from flask import Flask, render_template_string
-... import pandas as pd
-... import matplotlib.pyplot as plt
-... import io
-... import base64
-... 
-... app = Flask(__name__)
-... 
-... # Dados simulados
-... data = [
-...     {"VENDEDOR": "João", "CLIENTE": "Empresa A", "PRODUTO": "Produto X", "VALOR_MERCADORIA": 1500.00, "DATA_EMISSAO": "2024-01-15"},
-...     {"VENDEDOR": "Maria", "CLIENTE": "Empresa B", "PRODUTO": "Produto Y", "VALOR_MERCADORIA": 2300.00, "DATA_EMISSAO": "2024-02-10"},
-...     {"VENDEDOR": "Carlos", "CLIENTE": "Empresa C", "PRODUTO": "Produto Z", "VALOR_MERCADORIA": 1800.00, "DATA_EMISSAO": "2024-02-20"},
-...     {"VENDEDOR": "João", "CLIENTE": "Empresa D", "PRODUTO": "Produto X", "VALOR_MERCADORIA": 1200.00, "DATA_EMISSAO": "2024-03-05"},
-... ]
-... 
-... df = pd.DataFrame(data)
-... df["DATA_EMISSAO"] = pd.to_datetime(df["DATA_EMISSAO"])
-... df["MES"] = df["DATA_EMISSAO"].dt.strftime("%b")
-... 
-... # Gráfico de vendas por mês
-... monthly_sales = df.groupby("MES")["VALOR_MERCADORIA"].sum()
-... fig, ax = plt.subplots()
-... monthly_sales.plot(kind='bar', ax=ax)
-... ax.set_title("Vendas por Mês")
-... ax.set_ylabel("Valor Total (R$)")
-... plt.tight_layout()
-... 
-... # Converter gráfico para base64
-... img = io.BytesIO()
-... plt.savefig(img, format='png')
-... img.seek(0)
-... plot_url = base64.b64encode(img.getvalue()).decode()
-... 
-... # HTML da interface
-... template = """
-... <!DOCTYPE html>
-... <html>
-... <head>
+from flask import Flask, render_template_string
+import pandas as pd
+import matplotlib.pyplot as plt
+import io
+import base64
+
+app = Flask(__name__)
+
+data = [
+    {"VENDEDOR": "João", "CLIENTE": "Empresa A", "PRODUTO": "Produto X", "VALOR_MERCADORIA": 1500.00, "DATA_EMISSAO": "2024-01-15"},
+    {"VENDEDOR": "Maria", "CLIENTE": "Empresa B", "PRODUTO": "Produto Y", "VALOR_MERCADORIA": 2300.00, "DATA_EMISSAO": "2024-02-10"},
+    {"VENDEDOR": "Carlos", "CLIENTE": "Empresa C", "PRODUTO": "Produto Z", "VALOR_MERCADORIA": 1800.00, "DATA_EMISSAO": "2024-02-20"},
+    {"VENDEDOR": "João", "CLIENTE": "Empresa D", "PRODUTO": "Produto X", "VALOR_MERCADORIA": 1200.00, "DATA_EMISSAO": "2024-03-05"},
+]
+
+df = pd.DataFrame(data)
+df["DATA_EMISSAO"] = pd.to_datetime(df["DATA_EMISSAO"])
+df["MES"] = df["DATA_EMISSAO"].dt.strftime("%b")
+
+monthly_sales = df.groupby("MES")["VALOR_MERCADORIA"].sum()
+fig, ax = plt.subplots()
+monthly_sales.plot(kind='bar', ax=ax)
+ax.set_title("Vendas por Mês")
+ax.set_ylabel("Valor Total (R$)")
+plt.tight_layout()
+
+img = io.BytesIO()
+plt.savefig(img, format='png')
+img.seek(0)
+plot_url = base64.b64encode(img.getvalue()).decode()
+
+template = """
+<!DOCTYPE html>
+<html>
+<head>
     <title>Painel de Vendas</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
