@@ -73,5 +73,7 @@ template = """
 def dashboard():
     return render_template_string(template, plot_url=plot_url, data=df.to_dict(orient='records'))
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == '__main__':    
+import os
+port = int(os.environ.get("PORT", 5000))
+app.run(host="0.0.0.0", port=port)
